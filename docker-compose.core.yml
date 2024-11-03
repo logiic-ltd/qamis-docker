@@ -1,0 +1,190 @@
+version: '3.7'
+
+x-default-logging: &default
+  {}
+
+x-loki-logging: &loki
+  driver: loki
+  options:
+    loki-url: ${LOKI_URL:-http://localhost:3100/loki/api/v1/push}
+    mode: non-blocking
+    max-buffer-size: 4m
+    loki-retries: "3"
+
+x-log-config: &log-config
+  <<: *default
+
+services:
+  # DHIS2 Services
+  dhis2:
+    image: dhis2/core:${DHIS2_VERSION:-2.41.1}
+    environment:
+      DHIS2_DATABASE_HOST: dhis2db
+      DHIS2_DATABASE_PORT: 5432
+      DHIS2_DATABASE_NAME: ${DHIS2_DB_NAME:-dhis2}
+      DHIS2_DATABASE_USERNAME: ${DHIS2_DB_USER:-dhis}
+      DHIS2_DATABASE_PASSWORD: ${DHIS2_DB_PASSWORD:-dhis}
+      JAVA_OPTS: ${DHIS2_JAVA_OPTS:--Xms2048m -Xmx4096m}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - dhis2-home:/opt/dhis2
+      - ${DHIS2_CONFIG_PATH:-./dhis2-config}:/opt/dhis2/config:ro
+    depends_on:
+      - dhis2db
+    logging: *log-config
+    restart: unless-stopped
+
+  dhis2db:
+    image: postgis/postgis:${POSTGRES_VERSION:-15-3.3}
+    environment:
+      POSTGRES_DB: ${DHIS2_DB_NAME:-dhis2}
+      POSTGRES_USER: ${DHIS2_DB_USER:-dhis}
+      POSTGRES_PASSWORD: ${DHIS2_DB_PASSWORD:-dhis}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - dhis2-db:/var/lib/postgresql/data
+    logging: *log-config
+    restart: unless-stopped
+
+  # Frappe Services with Required Apps  
+  frappe:
+    image: frappe/erpnext:${FRAPPE_VERSION:-v15.46.0}
+    environment:
+      DB_HOST: frappedb
+      DB_PORT: 3306
+      MARIADB_ROOT_PASSWORD: ${FRAPPE_DB_ROOT_PASSWORD:-admin}
+      MYSQL_ROOT_PASSWORD: ${FRAPPE_DB_ROOT_PASSWORD:-admin}
+      INSTALL_APPS: |
+        accreditation-management,https://github.com/logiic-ltd/accreditation-management.git
+        qamis-inspection-management,https://github.com/logiic-ltd/qamis-inspection-management.git
+    volumes:
+      - frappe-sites:/home/frappe/frappe-bench/sites
+      - ${FRAPPE_APPS_PATH:-./frappe-apps}:/home/frappe/frappe-bench/apps
+    depends_on:
+      - frappedb
+    logging: *log-config
+    restart: unless-stopped
+
+  frappedb:
+    image: mariadb:${MARIADB_VERSION:-10.6}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${FRAPPE_DB_ROOT_PASSWORD:-admin}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - frappe-db:/var/lib/mysql
+    logging: *log-config
+    restart: unless-stopped
+
+  # Spring Boot Integration Service
+  qamis-integration:
+    build:
+      context: https://github.com/logiic-ltd/qamis-integration-service.git
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://qamisdb:5432/${QAMIS_DB_NAME:-qamis}
+      SPRING_DATASOURCE_USERNAME: ${QAMIS_DB_USER:-qamis}
+      SPRING_DATASOURCE_PASSWORD: ${QAMIS_DB_PASSWORD:-qamis}
+      DHIS2_BASE_URL: http://dhis2:8080
+      DHIS2_USERNAME: ${DHIS2_API_USER:-admin}
+      DHIS2_PASSWORD: ${DHIS2_API_PASSWORD:-district}
+      PANDASAI_URL: http://pandasai:5000
+      TZ: ${TZ:-UTC}
+    depends_on:
+      - qamisdb
+      - dhis2
+      - pandasai
+    logging: *log-config
+    restart: unless-stopped
+
+  qamisdb:
+    image: postgres:${POSTGRES_VERSION:-15}
+    environment:
+      POSTGRES_DB: ${QAMIS_DB_NAME:-qamis}
+      POSTGRES_USER: ${QAMIS_DB_USER:-qamis}
+      POSTGRES_PASSWORD: ${QAMIS_DB_PASSWORD:-qamis}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - qamis-db:/var/lib/postgresql/data
+    logging: *log-config
+    restart: unless-stopped
+
+  # PandasAI Service
+  pandasai:
+    build:
+      context: ./pandasai
+      dockerfile: Dockerfile
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - pandasai-data:/data
+    logging: *log-config
+    restart: unless-stopped
+    profiles: ["standard"]
+
+  # Monitoring Stack (Standard Distribution Only)
+  prometheus:
+    image: prom/prometheus:${PROMETHEUS_VERSION:-v2.45.0}
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    logging: *log-config
+    restart: unless-stopped
+    profiles: ["standard"]
+
+  grafana:
+    image: grafana/grafana:${GRAFANA_VERSION:-10.0.3}
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    logging: *log-config
+    restart: unless-stopped
+    profiles: ["standard"]
+
+volumes:
+  # Core Application Data
+  dhis2-home:
+    # Stores DHIS2 configurations, apps and runtime data
+    name: dhis2-home
+  dhis2-db:
+    # PostgreSQL database for DHIS2
+    name: dhis2-db
+  dhis2-config-checksums:
+    # Track DHIS2 configuration changes
+    name: dhis2-config-checksums
+  
+  # Frappe/ERPNext Data  
+  frappe-sites:
+    # Frappe sites, apps and configurations
+    name: frappe-sites
+  frappe-db:
+    # MariaDB database for Frappe/ERPNext
+    name: frappe-db
+  frappe-config-checksums:
+    # Track Frappe configuration changes
+    name: frappe-config-checksums
+    
+  # Integration Layer
+  qamis-db:
+    # PostgreSQL database for QAMIS integration service
+    name: qamis-db
+  qamis-uploads:
+    # Store uploaded files and documents
+    name: qamis-uploads
+    
+  # Analytics & Monitoring (Standard Distribution)
+  pandasai-data:
+    # Storage for PandasAI analytics data and models
+    name: pandasai-data
+  prometheus-data:
+    # Prometheus time-series metrics storage
+    name: prometheus-data
+  grafana-data:
+    # Grafana dashboards, users and configurations
+    name: grafana-data

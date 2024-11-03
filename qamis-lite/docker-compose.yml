@@ -1,0 +1,70 @@
+version: '3.7'
+
+x-default-logging: &default
+  {}
+
+x-loki-logging: &loki
+  driver: loki
+  options:
+    loki-url: ${LOKI_URL:-http://localhost:3100/loki/api/v1/push}
+    mode: non-blocking
+    max-buffer-size: 4m
+    loki-retries: "3"
+
+x-log-config: &log-config
+  <<: *default
+
+services:
+  dhis2:
+    image: dhis2/core:${DHIS2_VERSION:-2.40.1}
+    environment:
+      DHIS2_DATABASE_HOST: db
+      DHIS2_DATABASE_PORT: 5432
+      DHIS2_DATABASE_NAME: ${DHIS2_DB_NAME:-dhis2}
+      DHIS2_DATABASE_USERNAME: ${DHIS2_DB_USER:-dhis}
+      DHIS2_DATABASE_PASSWORD: ${DHIS2_DB_PASSWORD:-dhis}
+      JAVA_OPTS: ${DHIS2_JAVA_OPTS:--Xms2048m -Xmx4096m}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - dhis2-data:/opt/dhis2
+    depends_on:
+      - db
+    logging: *log-config
+    restart: unless-stopped
+
+  db:
+    image: postgis/postgis:${POSTGRES_VERSION:-15-3.3}
+    environment:
+      POSTGRES_DB: ${DHIS2_DB_NAME:-dhis2}
+      POSTGRES_USER: ${DHIS2_DB_USER:-dhis}
+      POSTGRES_PASSWORD: ${DHIS2_DB_PASSWORD:-dhis}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    logging: *log-config
+    restart: unless-stopped
+
+  redis:
+    image: redis:${REDIS_VERSION:-7.0-alpine}
+    volumes:
+      - redis-data:/data
+    logging: *log-config
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:${NGINX_VERSION:-1.25-alpine}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - dhis2
+    logging: *log-config
+    restart: unless-stopped
+
+volumes:
+  dhis2-data:
+  db-data:
+  redis-data:
