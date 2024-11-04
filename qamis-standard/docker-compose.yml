@@ -16,7 +16,7 @@ x-log-config: &log-config
 
 services:
   dhis2:
-    image: dhis2/core:${DHIS2_VERSION:-2.40.1}
+    image: dhis2/core:${DHIS2_VERSION:-2.41.1}
     environment:
       DHIS2_DATABASE_HOST: db
       DHIS2_DATABASE_PORT: 5432
