@@ -19,6 +19,7 @@ services:
   dhis2:
     image: dhis2/core:${DHIS2_VERSION:-2.41.1}
     environment:
+      DHIS2_HOME: /opt/dhis2
       DHIS2_DATABASE_HOST: dhis2db
       DHIS2_DATABASE_PORT: 5432
       DHIS2_DATABASE_NAME: ${DHIS2_DB_NAME:-dhis2}
@@ -26,11 +27,9 @@ services:
       DHIS2_DATABASE_PASSWORD: ${DHIS2_DB_PASSWORD:-dhis}
       JAVA_OPTS: ${DHIS2_JAVA_OPTS:--Xms2048m -Xmx4096m}
       TZ: ${TZ:-UTC}
-    environment:
-      DHIS2_HOME: /opt/dhis2
     volumes:
       - dhis2-home:/opt/dhis2
-      - ${DHIS2_CONFIG_PATH:-./dhis2-config}/dhis.conf:/opt/dhis2/dhis.conf:ro
+      - ${DHIS2_CONFIG_PATH:-./dhis2-config}/dhis.conf:/opt/dhis2/config/dhis.conf:ro
     depends_on:
       - dhis2db
     logging: *log-config
