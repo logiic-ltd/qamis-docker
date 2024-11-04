@@ -26,9 +26,11 @@ services:
       DHIS2_DATABASE_PASSWORD: ${DHIS2_DB_PASSWORD:-dhis}
       JAVA_OPTS: ${DHIS2_JAVA_OPTS:--Xms2048m -Xmx4096m}
       TZ: ${TZ:-UTC}
+    environment:
+      DHIS2_HOME: /opt/dhis2
     volumes:
       - dhis2-home:/opt/dhis2
-      - ${DHIS2_CONFIG_PATH:-./dhis2-config}:/opt/dhis2/config:ro
+      - ${DHIS2_CONFIG_PATH:-./dhis2-config}/dhis.conf:/opt/dhis2/dhis.conf:ro
     depends_on:
       - dhis2db
     logging: *log-config
@@ -80,6 +82,7 @@ services:
     build:
       context: https://github.com/logiic-ltd/qamis-integration-service.git
       dockerfile: Dockerfile
+    profiles: ["lite", "standard"]
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://qamisdb:5432/${QAMIS_DB_NAME:-qamis}
       SPRING_DATASOURCE_USERNAME: ${QAMIS_DB_USER:-qamis}
@@ -98,6 +101,7 @@ services:
 
   qamisdb:
     image: postgres:${POSTGRES_VERSION:-15}
+    profiles: ["lite", "standard"]
     environment:
       POSTGRES_DB: ${QAMIS_DB_NAME:-qamis}
       POSTGRES_USER: ${QAMIS_DB_USER:-qamis}
@@ -120,7 +124,7 @@ services:
       - pandasai-data:/data
     logging: *log-config
     restart: unless-stopped
-    profiles: ["standard"]
+    profiles: ["standard"] 
 
   # Monitoring Stack (Standard Distribution Only)
   prometheus:

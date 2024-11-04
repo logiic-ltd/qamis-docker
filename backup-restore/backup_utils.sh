@@ -33,6 +33,22 @@ function is_compose_container_present() {
     fi
 }
 
+function is_directory_exists() {
+    if [[ -d $1 ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+function is_directory_empty() {
+    if [[ -z "$(ls -A $1)" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 function backup_db() {
     local db_type=$1
     local db_name=$2
@@ -86,6 +102,16 @@ function backup_container_file_system() {
         docker compose cp -a "$service_name:$container_file_path" "$backup_file_path"
         if [ $? -eq 0 ]; then
             log_info "Successfully backed up files from $container_file_path"
+            # Create a tar.gz archive of the backed up files
+            cd "$backup_file_path" && tar -czf "${container_file_path##*/}.tar.gz" . && cd -
+            if [ $? -eq 0 ]; then
+                log_info "Successfully compressed backup from $container_file_path"
+                # Clean up original files after compression
+                rm -rf "$backup_file_path"/*
+                mv "${backup_file_path}/${container_file_path##*/}.tar.gz" "$backup_file_path/"
+            else
+                log_warning "Failed to compress backup from $container_file_path"
+            fi
         else
             log_error "Failed to backup files from $container_file_path"
         fi
@@ -104,6 +130,15 @@ function verify_backup() {
         log_error "Backup file at $backup_path is empty"
         return 1
     fi
+    
+    # Check if it's a compressed file
+    if [[ "$backup_path" =~ \.(gz|tar\.gz)$ ]]; then
+        if ! gzip -t "$backup_path" 2>/dev/null; then
+            log_error "Backup file at $backup_path is corrupted"
+            return 1
+        fi
+    fi
+    
     log_info "Verified backup at $backup_path"
     return 0
 }
