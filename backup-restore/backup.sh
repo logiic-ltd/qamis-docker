@@ -16,7 +16,7 @@ backup_container_file_system "dhis2" "/opt/dhis2" "$BACKUP_DIR/dhis2_files"
 log_info "Backing up ERPNext..."
 docker compose exec -T erpnext bench --site site1.local backup --with-files
 # Move ERPNext backups to our backup directory
-docker compose cp erpnext:/home/frappe/frappe-bench/sites/site1.local/private/backups/ "$BACKUP_DIR/erpnext_backup"
+docker compose cp erpnext:/home/erpnext/erpnext-bench/sites/site1.local/private/backups/ "$BACKUP_DIR/erpnext_backup"
 
 # Backup QAMIS integration
 log_info "Backing up QAMIS integration..."
@@ -33,7 +33,7 @@ fi
 log_info "Verifying backups..."
 verify_backup "$BACKUP_DIR/dhis2.sql.gz"
 verify_backup "$BACKUP_DIR/dhis2_files/data.tar.gz"
-verify_backup "$BACKUP_DIR/frappe_backup/database.sql.gz"
+verify_backup "$BACKUP_DIR/erpnext_backup/database.sql.gz"
 verify_backup "$BACKUP_DIR/qamis.sql.gz"
 
 if [ -f "$BACKUP_DIR/pandasai_data/data.tar.gz" ]; then
