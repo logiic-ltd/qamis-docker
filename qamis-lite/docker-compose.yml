@@ -32,7 +32,7 @@ services:
     logging: *log-config
     restart: unless-stopped
 
-  dhis2db:
+  db:
     image: postgis/postgis:${POSTGRES_VERSION:-15-3.3}
     environment:
       POSTGRES_DB: ${DHIS2_DB_NAME:-dhis2}
