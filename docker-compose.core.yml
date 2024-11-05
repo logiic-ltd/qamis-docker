@@ -49,13 +49,13 @@ services:
 
   # ERPNext Services with Required Apps  
   erpnext:
-    image: frappe/erpnext:${FRAPPE_VERSION:-version-14}
+    image: frappe/erpnext:${ERPNEXT_VERSION:-version-14}
     command: bash -c "bench init frappe-bench --skip-redis-config-generation && cd frappe-bench && bench new-site site1.local --mariadb-root-password $${MYSQL_ROOT_PASSWORD} --admin-password admin && bench --site site1.local install-app erpnext && bench start"
     environment:
-      DB_HOST: frappedb
+      DB_HOST: erpnextdb
       DB_PORT: 3306
-      MARIADB_ROOT_PASSWORD: ${FRAPPE_DB_ROOT_PASSWORD:-admin}
-      MYSQL_ROOT_PASSWORD: ${FRAPPE_DB_ROOT_PASSWORD:-admin}
+      MARIADB_ROOT_PASSWORD: ${ERPNEXT_DB_ROOT_PASSWORD:-admin}
+      MYSQL_ROOT_PASSWORD: ${ERPNEXT_DB_ROOT_PASSWORD:-admin}
       INSTALL_APPS: |
         erpnext
         accreditation-management,https://github.com/logiic-ltd/accreditation-management.git

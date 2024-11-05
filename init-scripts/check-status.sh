@@ -25,7 +25,7 @@ check_service() {
 
 # Check core services
 check_service "DHIS2" "http://dhis2:8080/api/status"
-check_service "Frappe" "http://frappe:8000/api/method/ping"
+check_service "ERPNext" "http://erpnext:8000/api/method/ping"
 check_service "Nginx" "http://nginx/health"
 
 # Check optional services based on deployment type
