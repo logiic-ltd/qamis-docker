@@ -29,7 +29,7 @@ services:
       TZ: ${TZ:-UTC}
     volumes:
       - dhis2-home:/opt/dhis2
-      - ${DHIS2_CONFIG_PATH:-./dhis2-config}/dhis.conf:/opt/dhis2/dhis.conf:ro
+      - ${DHIS2_CONFIG_PATH:-./dhis2-config}/dhis.conf:/opt/dhis2/dhis2.conf:ro
     depends_on:
       - dhis2db
     logging: *log-config
