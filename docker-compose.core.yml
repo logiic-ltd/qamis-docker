@@ -47,7 +47,7 @@ services:
     logging: *log-config
     restart: unless-stopped
 
-  # ERPNext Services with Required Apps  
+  # ERPNext and Custom Apps
   erpnext:
     image: erpnext/erpnext:${ERPNEXT_VERSION:-version-14}
     command: bash -c "cd /home/erpnext && bench new-site site1.local --mariadb-root-password $${MYSQL_ROOT_PASSWORD} --admin-password admin && bench --site site1.local install-app erpnext && bench start"
@@ -61,7 +61,7 @@ services:
         accreditation-management,https://github.com/logiic-ltd/accreditation-management.git
         qamis-inspection-management,https://github.com/logiic-ltd/qamis-inspection-management.git
     volumes:
-      - erpnext-sites:/home/erpnext/erpnext-bench/sites
+      - erpnext-sites:/home/erpnext/frappe-bench/sites
       - ${ERPNEXT_APPS_PATH:-./erpnext-apps}:/home/erpnext/erpnext-bench/apps
     depends_on:
       - erpnextdb
