@@ -112,9 +112,7 @@ services:
 
   # PandasAI Service
   pandasai:
-    build:
-      context: ./pandasai
-      dockerfile: Dockerfile
+    image: pandasai/pandasai:${PANDASAI_VERSION:-latest}
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       TZ: ${TZ:-UTC}
