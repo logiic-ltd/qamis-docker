@@ -61,8 +61,8 @@ services:
         accreditation-management,https://github.com/logiic-ltd/accreditation-management.git
         qamis-inspection-management,https://github.com/logiic-ltd/qamis-inspection-management.git
     volumes:
-      - erpnext-sites:/home/frappe/frappe-bench/sites
-      - ${ERPNEXT_APPS_PATH:-./erpnext-apps}:/home/frappe/frappe-bench/apps
+      - erpnext-sites:/home/erpnext/erpnext-bench/sites
+      - ${ERPNEXT_APPS_PATH:-./erpnext-apps}:/home/erpnext/erpnext-bench/apps
     depends_on:
       - erpnextdb
     logging: *log-config
