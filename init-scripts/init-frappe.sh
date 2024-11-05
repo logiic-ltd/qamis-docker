@@ -58,10 +58,19 @@ install_app() {
     done
 }
 
+# Install ERPNext first as it's a dependency
+install_app "erpnext"
+
+# Install custom apps
 install_app "accreditation-management"
 install_app "qamis-inspection-management"
 
 # Verify apps are properly installed
+bench --site site1.local list-apps | grep -q "erpnext" || {
+    echo "ERROR: erpnext not properly installed"
+    exit 1
+}
+
 bench --site site1.local list-apps | grep -q "accreditation-management" || {
     echo "ERROR: accreditation-management not properly installed"
     exit 1
