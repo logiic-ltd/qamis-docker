@@ -16,7 +16,7 @@ x-log-config: &log-config
 services:
   # ERPNext Services
   erpnext:
-    image: erpnext/erpnext:${ERPNEXT_VERSION:-version-14}
+    image: frappe/erpnext:${ERPNEXT_VERSION:-version-14}
     environment:
       DB_HOST: erpnextdb
       DB_PORT: 3306
