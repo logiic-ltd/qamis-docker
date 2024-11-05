@@ -58,11 +58,11 @@ services:
       - dhis2-data:/opt/dhis2
       - ../dhis2-config:/opt/dhis2/config:ro
     depends_on:
-      - db
+      - dhis2db
     logging: *log-config
     restart: unless-stopped
 
-  db:
+  dhis2db:
     image: postgis/postgis:${POSTGRES_VERSION:-15-3.3}
     environment:
       POSTGRES_DB: ${DHIS2_DB_NAME:-dhis2}
