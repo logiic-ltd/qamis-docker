@@ -61,8 +61,8 @@ services:
         accreditation-management,https://github.com/logiic-ltd/accreditation-management.git
         qamis-inspection-management,https://github.com/logiic-ltd/qamis-inspection-management.git
     volumes:
-      - erpnext-sites:/home/erpnext/frappe-bench/sites
-      - ${ERPNEXT_APPS_PATH:-./erpnext-apps}:/home/erpnext/erpnext-bench/apps
+      - erpnext-sites:/home/erpnext/sites
+      - ${ERPNEXT_APPS_PATH:-./erpnext-apps}:/home/erpnext/apps
     depends_on:
       - erpnextdb
     logging: *log-config
@@ -222,10 +222,6 @@ volumes:
   erpnext-db:
     # MariaDB database for ERPNext
     name: erpnext-db
-  erpnext-config-checksums:
-    # Track ERPNext configuration changes
-    name: erpnext-config-checksums
-    
   # Integration Layer
   qamis-db:
     # PostgreSQL database for QAMIS integration service
