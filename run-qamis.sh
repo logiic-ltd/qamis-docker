@@ -72,23 +72,23 @@ function start {
     echo "✓ DHIS2 is running"
     
     ATTEMPT=1
-    echo "Checking Frappe..."
+    echo "Checking ERPNext..."
     until curl -f "http://localhost:8000/api/method/ping" > /dev/null 2>&1; do
         if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
-            echo "ERROR: Failed to connect to Frappe. Check logs with: docker compose --env-file $file logs frappe"
+            echo "ERROR: Failed to connect to ERPNext. Check logs with: docker compose --env-file $file logs erpnext"
             return 1
         fi
         echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: Frappe not ready, waiting..."
         sleep 10
         ATTEMPT=$((ATTEMPT + 1))
     done
-    echo "✓ Frappe is running"
+    echo "✓ ERPNext is running"
     
     echo "✓ QAMIS started successfully!"
     echo
     echo "Access points:"
     echo "- DHIS2: http://localhost:8080 (admin/district)"
-    echo "- Frappe: http://localhost:8000 (Administrator/admin)"
+    echo "- ERPNext: http://localhost:8000 (Administrator/admin)"
     if [ "$current_subdir" == "qamis-standard" ]; then
         echo "- Grafana: http://localhost:3000 (admin/admin)"
         echo "- PandasAI: http://localhost:5000"

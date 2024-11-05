@@ -14,7 +14,7 @@ x-log-config: &log-config
   <<: *default
 
 services:
-  # Frappe Services
+  # ERPNext Services
   erpnext:
     image: frappe/erpnext:${ERPNEXT_VERSION:-version-14}
     environment:
