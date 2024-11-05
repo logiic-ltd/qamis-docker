@@ -48,7 +48,7 @@ services:
     restart: unless-stopped
 
   # ERPNext Services with Required Apps  
-  frappe:
+  erpnext:
     image: frappe/erpnext:${FRAPPE_VERSION:-version-14}
     environment:
       DB_HOST: frappedb
@@ -60,17 +60,17 @@ services:
         accreditation-management,https://github.com/logiic-ltd/accreditation-management.git
         qamis-inspection-management,https://github.com/logiic-ltd/qamis-inspection-management.git
     volumes:
-      - frappe-sites:/home/frappe/frappe-bench/sites
-      - ${FRAPPE_APPS_PATH:-./frappe-apps}:/home/frappe/frappe-bench/apps
+      - erpnext-sites:/home/frappe/frappe-bench/sites
+      - ${ERPNEXT_APPS_PATH:-./erpnext-apps}:/home/frappe/frappe-bench/apps
     depends_on:
-      - frappedb
+      - erpnextdb
     logging: *log-config
     restart: unless-stopped
 
-  frappedb:
+  erpnextdb:
     image: mariadb:${MARIADB_VERSION:-10.6}
     environment:
-      MYSQL_ROOT_PASSWORD: ${FRAPPE_DB_ROOT_PASSWORD:-admin}
+      MYSQL_ROOT_PASSWORD: ${ERPNEXT_DB_ROOT_PASSWORD:-admin}
       TZ: ${TZ:-UTC}
     volumes:
       - frappe-db:/var/lib/mysql
@@ -214,16 +214,16 @@ volumes:
     # Track DHIS2 configuration changes
     name: dhis2-config-checksums
   
-  # Frappe/ERPNext Data  
-  frappe-sites:
-    # Frappe sites, apps and configurations
-    name: frappe-sites
-  frappe-db:
-    # MariaDB database for Frappe/ERPNext
-    name: frappe-db
-  frappe-config-checksums:
-    # Track Frappe configuration changes
-    name: frappe-config-checksums
+  # ERPNext Data  
+  erpnext-sites:
+    # ERPNext sites, apps and configurations
+    name: erpnext-sites
+  erpnext-db:
+    # MariaDB database for ERPNext
+    name: erpnext-db
+  erpnext-config-checksums:
+    # Track ERPNext configuration changes
+    name: erpnext-config-checksums
     
   # Integration Layer
   qamis-db:

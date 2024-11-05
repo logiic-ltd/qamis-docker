@@ -2,7 +2,7 @@
 
 set -e  # Exit on any error
 
-echo "Starting Frappe initialization..."
+echo "Starting ERPNext initialization..."
 
 # Validate environment variables
 if [ -z "$FRAPPE_ADMIN_PASSWORD" ]; then
@@ -13,8 +13,8 @@ fi
 MAX_ATTEMPTS=30
 ATTEMPT=1
 
-echo "Waiting for Frappe to start (this may take several minutes)..."
-until curl -f "http://frappe:8000/api/method/ping" > /dev/null 2>&1; do
+echo "Waiting for ERPNext to start (this may take several minutes)..."
+until curl -f "http://erpnext:8000/api/method/ping" > /dev/null 2>&1; do
     if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
         echo "ERROR: Failed to connect to Frappe after $MAX_ATTEMPTS attempts"
         exit 1
