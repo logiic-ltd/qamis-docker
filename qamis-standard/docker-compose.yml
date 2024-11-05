@@ -30,7 +30,7 @@ services:
       - erpnext-sites:/home/erpnext/erpnext-bench/sites
       - ${ERPNEXT_APPS_PATH:-./erpnext-apps}:/home/erpnext/erpnext-bench/apps
     depends_on:
-      - frappedb
+      - erpnextdb
     logging: *log-config
     restart: unless-stopped
 
