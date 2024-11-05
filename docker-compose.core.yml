@@ -81,6 +81,7 @@ services:
     image: logiic/qamis-integration:${QAMIS_VERSION:-1.0.0}
     profiles: ["lite", "standard"]
     environment:
+      SERVER_PORT: 8081
       SPRING_DATASOURCE_URL: jdbc:postgresql://qamisdb:5432/${QAMIS_DB_NAME:-qamis}
       SPRING_DATASOURCE_USERNAME: ${QAMIS_DB_USER:-qamis}
       SPRING_DATASOURCE_PASSWORD: ${QAMIS_DB_PASSWORD:-qamis}
