@@ -11,9 +11,9 @@ BACKUP_DIR=$1
 echo "Restoring DHIS2 database..."
 docker compose exec -T dhis2db psql -U dhis < "$BACKUP_DIR/dhis2.sql"
 
-# Restore Frappe
-echo "Restoring Frappe database and files..."
-docker compose exec -T frappe bench --site site1.local restore "$BACKUP_DIR/site1.local.sql"
+# Restore ERPNext
+echo "Restoring ERPNext database and files..."
+docker compose exec -T erpnext bench --site site1.local restore "$BACKUP_DIR/site1.local.sql"
 
 # Restore QAMIS integration database
 echo "Restoring QAMIS integration database..."
