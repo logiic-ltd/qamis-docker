@@ -310,7 +310,7 @@ function start {
     echo
     echo "Access points:"
     echo "- DHIS2: http://localhost:8080 (admin/district)"
-    echo "- Frappe: http://localhost:8000 (Administrator/admin)"
+    echo "- ERPNext: http://localhost:8000 (Administrator/admin)"
     if [ "$current_subdir" == "qamis-standard" ]; then
         echo "- Grafana: http://localhost:3000 (admin/admin)"
         echo "- PandasAI: http://localhost:5000"
