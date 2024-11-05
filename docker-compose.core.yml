@@ -175,6 +175,15 @@ services:
     restart: unless-stopped
     profiles: ["standard"]
 
+  redis-exporter:
+    image: oliver006/redis_exporter:${REDIS_EXPORTER_VERSION:-v1.44.0}
+    environment:
+      REDIS_ADDR: redis://redis:6379
+    depends_on:
+      - redis
+    restart: unless-stopped
+    profiles: ["standard"]
+
   grafana:
     image: grafana/grafana:${GRAFANA_VERSION:-10.0.3}
     environment:

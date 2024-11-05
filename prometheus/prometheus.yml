@@ -7,19 +7,60 @@ scrape_configs:
     metrics_path: '/dhis2/api/metrics'
     static_configs:
       - targets: ['dhis2:8080']
+    scrape_interval: 30s
+    metrics_path: '/dhis2/api/metrics'
+    scheme: http
+    basic_auth:
+      username: ${DHIS2_API_USER:-admin}
+      password: ${DHIS2_API_PASSWORD:-district}
 
   - job_name: 'nginx'
     static_configs:
       - targets: ['nginx-exporter:9113']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    relabel_configs:
+      - source_labels: [__metrics_path__]
+        target_label: metrics_path
 
   - job_name: 'node'
     static_configs:
       - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+    # Add filesystem and network metrics
+    params:
+      collect[]:
+        - filesystem
+        - netstat
+        - meminfo
+        - cpu
 
   - job_name: 'cadvisor'
     static_configs:
       - targets: ['cadvisor:8080']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+    # Container metrics configuration
+    metric_relabel_configs:
+      - source_labels: [container_label_com_docker_compose_service]
+        target_label: service
+      - source_labels: [container_label_com_docker_compose_project]
+        target_label: project
 
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
+
+  # Add Frappe monitoring
+  - job_name: 'frappe'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['frappe:8000']
+    scrape_interval: 30s
+
+  # Add Redis monitoring
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 30s
