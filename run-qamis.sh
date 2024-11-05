@@ -294,13 +294,13 @@ function start {
     echo "✓ DHIS2 is running"
     
     ATTEMPT=1
-    echo "Checking Frappe..."
+    echo "Checking ERPNext..."
     until curl -f "http://localhost:8000/api/method/ping" > /dev/null 2>&1; do
         if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
-            echo "ERROR: Failed to connect to Frappe. Check logs with: docker compose --env-file $file logs frappe"
+            echo "ERROR: Failed to connect to ERPNext. Check logs with: docker compose --env-file $file logs erpnext"
             return 1
         fi
-        echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: Frappe not ready, waiting..."
+        echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: ERPNext not ready, waiting..."
         sleep 10
         ATTEMPT=$((ATTEMPT + 1))
     done
