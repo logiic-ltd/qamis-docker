@@ -16,7 +16,7 @@ x-log-config: &log-config
 services:
   # Frappe Services
   frappe:
-    image: frappe/frappe-bench:${FRAPPE_VERSION:-version-15}
+    image: frappe/erpnext:${FRAPPE_VERSION:-version-15}
     environment:
       DB_HOST: frappedb
       DB_PORT: 3306
