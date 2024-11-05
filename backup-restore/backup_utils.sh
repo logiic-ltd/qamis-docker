@@ -98,10 +98,6 @@ function backup_container_file_system() {
     local container_file_path=$2
     local backup_file_path=$3
     
-    # Convert frappe service name to erpnext if needed
-    if [ "$service_name" = "frappe" ]; then
-        service_name="erpnext"
-    fi
     
     if [[ $(is_compose_container_present $service_name) -eq 1 ]]; then
         docker compose cp -a "$service_name:$container_file_path" "$backup_file_path"

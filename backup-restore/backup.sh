@@ -12,11 +12,11 @@ log_info "Backing up DHIS2..."
 backup_db "postgres" "dhis2" "dhis" "dhis" "dhis2db" "$BACKUP_DIR/dhis2.sql"
 backup_container_file_system "dhis2" "/opt/dhis2" "$BACKUP_DIR/dhis2_files"
 
-# Backup Frappe
-log_info "Backing up Frappe..."
-docker compose exec -T frappe bench --site site1.local backup --with-files
-# Move Frappe backups to our backup directory
-docker compose cp frappe:/home/frappe/frappe-bench/sites/site1.local/private/backups/ "$BACKUP_DIR/frappe_backup"
+# Backup ERPNext
+log_info "Backing up ERPNext..."
+docker compose exec -T erpnext bench --site site1.local backup --with-files
+# Move ERPNext backups to our backup directory
+docker compose cp erpnext:/home/frappe/frappe-bench/sites/site1.local/private/backups/ "$BACKUP_DIR/erpnext_backup"
 
 # Backup QAMIS integration
 log_info "Backing up QAMIS integration..."
