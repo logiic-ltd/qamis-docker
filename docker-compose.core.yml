@@ -138,6 +138,43 @@ services:
     restart: unless-stopped
     profiles: ["standard"]
 
+  node-exporter:
+    image: prom/node-exporter:${NODE_EXPORTER_VERSION:-v1.6.1}
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    profiles: ["standard"]
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:${NGINX_EXPORTER_VERSION:-0.11.0}
+    command:
+      - '-nginx.scrape-uri=http://nginx/stub_status'
+    depends_on:
+      - nginx
+    restart: unless-stopped
+    profiles: ["standard"]
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:${CADVISOR_VERSION:-v0.47.2}
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    restart: unless-stopped
+    profiles: ["standard"]
+
   grafana:
     image: grafana/grafana:${GRAFANA_VERSION:-10.0.3}
     environment:
