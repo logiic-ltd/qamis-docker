@@ -49,7 +49,7 @@ services:
 
   # Frappe Services with Required Apps  
   frappe:
-    image: frappe/frappe:${FRAPPE_VERSION:-v15}
+    image: frappe/frappe:${FRAPPE_VERSION:-15}
     environment:
       DB_HOST: frappedb
       DB_PORT: 3306
