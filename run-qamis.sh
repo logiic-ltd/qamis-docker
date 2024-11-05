@@ -304,7 +304,7 @@ function start {
         sleep 10
         ATTEMPT=$((ATTEMPT + 1))
     done
-    echo "✓ Frappe is running"
+    echo "✓ ERPNext is running"
     
     echo "✓ QAMIS started successfully!"
     echo
