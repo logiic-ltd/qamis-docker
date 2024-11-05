@@ -18,7 +18,7 @@ services:
   erpnext:
     image: frappe/erpnext:${ERPNEXT_VERSION:-version-14}
     environment:
-      DB_HOST: frappedb
+      DB_HOST: erpnextdb
       DB_PORT: 3306
       MARIADB_ROOT_PASSWORD: ${FRAPPE_DB_ROOT_PASSWORD:-admin}
       MYSQL_ROOT_PASSWORD: ${FRAPPE_DB_ROOT_PASSWORD:-admin}
