@@ -188,6 +188,9 @@ function restartService {
     fi
 }
 
+# Run setup validation first
+./init-scripts/validate-setup.sh
+
 checkDockerAndDockerComposeVersion
 checkIfDirectoryIsCorrect
 

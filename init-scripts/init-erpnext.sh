@@ -83,3 +83,55 @@ bench --site site1.local list-apps | grep -q "qamis-inspection-management" || {
 
 echo "✓ Apps installed successfully"
 echo "✓ Frappe initialization complete"
+#!/bin/bash
+
+set -e  # Exit on any error
+
+echo "Starting ERPNext initialization..."
+
+# Create required directories
+mkdir -p /home/erpnext/sites
+mkdir -p /home/erpnext/apps
+
+# Wait for database to be ready
+MAX_ATTEMPTS=30
+ATTEMPT=1
+
+echo "Waiting for MariaDB to start..."
+until mysqladmin ping -h"$DB_HOST" -u"root" -p"$MYSQL_ROOT_PASSWORD" --silent; do
+    if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+        echo "ERROR: MariaDB not ready after $MAX_ATTEMPTS attempts"
+        exit 1
+    fi
+    echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: MariaDB not ready, waiting..."
+    sleep 10
+    ATTEMPT=$((ATTEMPT + 1))
+done
+
+echo "✓ MariaDB is running"
+
+# Initialize site if it doesn't exist
+if [ ! -d "/home/erpnext/sites/site1.local" ]; then
+    echo "Creating new ERPNext site..."
+    bench new-site site1.local \
+        --mariadb-root-password "$MYSQL_ROOT_PASSWORD" \
+        --admin-password admin \
+        --no-mariadb-socket
+    
+    echo "Installing ERPNext application..."
+    bench --site site1.local install-app erpnext
+    
+    # Install additional apps if specified
+    if [ ! -z "$INSTALL_APPS" ]; then
+        echo "Installing additional apps..."
+        echo "$INSTALL_APPS" | while IFS=, read -r app_name app_url; do
+            if [ ! -z "$app_name" ]; then
+                echo "Installing $app_name from $app_url"
+                bench get-app "$app_name" "$app_url"
+                bench --site site1.local install-app "$app_name"
+            fi
+        done
+    fi
+fi
+
+echo "✓ ERPNext initialization complete"
