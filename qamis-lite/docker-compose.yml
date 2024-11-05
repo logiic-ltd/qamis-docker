@@ -18,7 +18,7 @@ services:
   dhis2:
     image: dhis2/core:${DHIS2_VERSION:-2.41.1}
     environment:
-      DHIS2_DATABASE_HOST: db
+      DHIS2_DATABASE_HOST: dhis2db
       DHIS2_DATABASE_PORT: 5432
       DHIS2_DATABASE_NAME: ${DHIS2_DB_NAME:-dhis2}
       DHIS2_DATABASE_USERNAME: ${DHIS2_DB_USER:-dhis}
@@ -32,7 +32,7 @@ services:
     logging: *log-config
     restart: unless-stopped
 
-  db:
+  dhis2db:
     image: postgis/postgis:${POSTGRES_VERSION:-15-3.3}
     environment:
       POSTGRES_DB: ${DHIS2_DB_NAME:-dhis2}
