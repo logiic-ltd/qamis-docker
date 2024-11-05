@@ -46,6 +46,7 @@ services:
   dhis2:
     image: dhis2/core:${DHIS2_VERSION:-2.41.1}
     environment:
+      DHIS2_HOME: /opt/dhis2
       DHIS2_DATABASE_HOST: db
       DHIS2_DATABASE_PORT: 5432
       DHIS2_DATABASE_NAME: ${DHIS2_DB_NAME:-dhis2}
@@ -55,6 +56,7 @@ services:
       TZ: ${TZ:-UTC}
     volumes:
       - dhis2-data:/opt/dhis2
+      - ../dhis2-config:/opt/dhis2/config:ro
     depends_on:
       - db
     logging: *log-config
