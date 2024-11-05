@@ -78,7 +78,7 @@ function start {
             echo "ERROR: Failed to connect to ERPNext. Check logs with: docker compose --env-file $file logs erpnext"
             return 1
         fi
-        echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: Frappe not ready, waiting..."
+        echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: ERPNext not ready, waiting..."
         sleep 10
         ATTEMPT=$((ATTEMPT + 1))
     done
