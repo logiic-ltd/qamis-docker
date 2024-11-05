@@ -15,6 +15,34 @@ x-log-config: &log-config
   <<: *default
 
 services:
+  # Frappe Services
+  frappe:
+    image: frappe/erpnext:${FRAPPE_VERSION:-v15.46.0}
+    environment:
+      DB_HOST: frappedb
+      DB_PORT: 3306
+      MARIADB_ROOT_PASSWORD: ${FRAPPE_DB_ROOT_PASSWORD:-admin}
+      MYSQL_ROOT_PASSWORD: ${FRAPPE_DB_ROOT_PASSWORD:-admin}
+      INSTALL_APPS: |
+        accreditation-management,https://github.com/logiic-ltd/accreditation-management.git
+        qamis-inspection-management,https://github.com/logiic-ltd/qamis-inspection-management.git
+    volumes:
+      - frappe-sites:/home/frappe/frappe-bench/sites
+      - ${FRAPPE_APPS_PATH:-./frappe-apps}:/home/frappe/frappe-bench/apps
+    depends_on:
+      - frappedb
+    logging: *log-config
+    restart: unless-stopped
+
+  frappedb:
+    image: mariadb:${MARIADB_VERSION:-10.6}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${FRAPPE_DB_ROOT_PASSWORD:-admin}
+      TZ: ${TZ:-UTC}
+    volumes:
+      - frappe-db:/var/lib/mysql
+    logging: *log-config
+    restart: unless-stopped
   dhis2:
     image: dhis2/core:${DHIS2_VERSION:-2.41.1}
     environment:
@@ -108,3 +136,5 @@ volumes:
   redis-data:
   prometheus-data:
   grafana-data:
+  frappe-sites:
+  frappe-db:
