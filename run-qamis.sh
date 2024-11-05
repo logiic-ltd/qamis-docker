@@ -129,6 +129,17 @@ function showDHIS2logs {
 
 function startAnalytics {
     echo "Starting analytics services (PandasAI and monitoring)..."
+    
+    # Pull images for each service individually
+    services=("pandasai" "grafana" "prometheus")
+    for service in "${services[@]}"; do
+        echo "Pulling image for $service..."
+        if ! docker compose --env-file "$file" pull "$service"; then
+            echo "WARNING: Failed to pull image for $service. Continuing with other services."
+        fi
+    done
+    
+    # Start services
     docker compose --env-file "$file" --profile analytics up -d
 }
 
