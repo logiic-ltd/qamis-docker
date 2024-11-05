@@ -49,7 +49,7 @@ services:
 
   # ERPNext Services with Required Apps  
   erpnext:
-    image: frappe/erpnext:${ERPNEXT_VERSION:-version-14}
+    image: erpnext/erpnext:${ERPNEXT_VERSION:-version-14}
     command: bash -c "bench init erpnext-bench --skip-redis-config-generation && cd erpnext-bench && bench new-site site1.local --mariadb-root-password $${MYSQL_ROOT_PASSWORD} --admin-password admin && bench --site site1.local install-app erpnext && bench start"
     environment:
       DB_HOST: erpnextdb
