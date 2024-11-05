@@ -19,6 +19,13 @@ FILES=(
     "./prometheus/prometheus.yml"
 )
 
+# Validate DHIS2 config location
+if grep -q "config/dhis.conf" docker-compose.core.yml; then
+    echo "ERROR: Incorrect DHIS2 config path in docker-compose.core.yml"
+    echo "Should be mounted at /opt/dhis2/dhis.conf"
+    exit 1
+fi
+
 # Check and create directories
 for dir in "${DIRS[@]}"; do
     if [ ! -d "$dir" ]; then
