@@ -44,9 +44,14 @@ function checkIfDirectoryIsCorrect {
 function start {
     echo "Starting QAMIS with default profile from $file file"
     
-    # Pull latest images first
-    echo "Pulling latest images..."
-    docker compose --env-file "$file" pull
+    # Pull images for each service individually
+    services=("dhis2" "dhis2db" "erpnext" "erpnextdb" "redis" "nginx" "pandasai" "prometheus" "grafana")
+    for service in "${services[@]}"; do
+        echo "Pulling image for $service..."
+        if ! docker compose --env-file "$file" pull "$service"; then
+            echo "WARNING: Failed to pull image for $service. Continuing with other services."
+        fi
+    done
     
     # Start services
     echo "Starting services..."
