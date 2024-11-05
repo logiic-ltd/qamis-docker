@@ -16,7 +16,7 @@ backup_container_file_system "dhis2" "/opt/dhis2" "$BACKUP_DIR/dhis2_files"
 log_info "Backing up ERPNext..."
 docker compose exec -T erpnext bench --site site1.local backup --with-files
 # Move ERPNext backups to our backup directory
-docker compose cp erpnext:/home/erpnext/erpnext-bench/sites/site1.local/private/backups/ "$BACKUP_DIR/erpnext_backup"
+docker compose cp erpnext:/home/frappe/erpnext-bench/sites/site1.local/private/backups/ "$BACKUP_DIR/erpnext_backup"
 
 # Backup QAMIS integration
 log_info "Backing up QAMIS integration..."
