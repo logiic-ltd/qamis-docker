@@ -15,16 +15,16 @@ x-log-config: &log-config
 
 services:
   dhis2:
-    image: dhis2/core:${DHIS2_VERSION:-2.41.1}
+    image: dhis2/core:${DHIS2_VERSION}
     environment:
       DHIS2_HOME: /opt/dhis2
       DHIS2_DATABASE_HOST: dhis2db
       DHIS2_DATABASE_PORT: 5432
-      DHIS2_DATABASE_NAME: ${DHIS2_DB_NAME:-dhis2}
-      DHIS2_DATABASE_USERNAME: ${DHIS2_DB_USER:-dhis}
-      DHIS2_DATABASE_PASSWORD: ${DHIS2_DB_PASSWORD:-dhis}
+      DHIS2_DATABASE_NAME: ${DHIS2_DB_NAME}
+      DHIS2_DATABASE_USERNAME: ${DHIS2_DB_USER}
+      DHIS2_DATABASE_PASSWORD: ${DHIS2_DB_PASSWORD}
       JAVA_OPTS: ${DHIS2_JAVA_OPTS:--Xms2048m -Xmx4096m}
-      TZ: ${TZ:-UTC}
+      TZ: ${TZ}
     volumes:
       - dhis2-data:/opt/dhis2
       - ../dhis2-config/dhis.conf:/opt/dhis2/dhis.conf:ro
@@ -53,10 +53,10 @@ services:
     restart: unless-stopped
 
   nginx:
-    image: nginx:${NGINX_VERSION:-1.25-alpine}
+    image: nginx:${NGINX_VERSION}
     ports:
-      - "${NGINX_HTTP_PORT:-80}:80"
-      - "${NGINX_HTTPS_PORT:-443}:443"
+      - "${NGINX_HTTP_PORT}:80"
+      - "${NGINX_HTTPS_PORT}:443"
     volumes:
       - ../nginx/conf.d:/etc/nginx/conf.d:ro
       - ../nginx/certs:/etc/nginx/certs:ro
