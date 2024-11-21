@@ -13,11 +13,6 @@ x-loki-logging: &loki
 x-log-config: &log-config
   <<: *default
 
-# Define profiles for QAMIS Standard
-profiles:
-  standard:
-    description: "QAMIS Standard services"
-
 services:
   # ERPNext Services
   erpnext:
