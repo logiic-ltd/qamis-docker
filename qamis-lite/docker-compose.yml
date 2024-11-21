@@ -13,11 +13,12 @@ x-loki-logging: &loki
 x-log-config: &log-config
   <<: *default
 
+# Define profiles for QAMIS Lite
+profiles:
+  lite:
+    description: "QAMIS Lite services"
+
 services:
-  # Define profiles for QAMIS Lite
-  profiles:
-    lite:
-      description: "QAMIS Lite services"
   dhis2:
     image: dhis2/core:${DHIS2_VERSION}
     environment:
