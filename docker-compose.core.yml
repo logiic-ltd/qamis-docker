@@ -78,26 +78,6 @@ services:
     logging: *log-config
     restart: unless-stopped
 
-  # Spring Boot Integration Service
-  qamis-integration:
-    image: logiic/qamis-integration:${QAMIS_VERSION:-1.0.0}
-    profiles: ["lite", "standard"]
-    environment:
-      SERVER_PORT: 8081
-      SPRING_DATASOURCE_URL: jdbc:postgresql://qamisdb:5432/${QAMIS_DB_NAME:-qamis}
-      SPRING_DATASOURCE_USERNAME: ${QAMIS_DB_USER:-qamis}
-      SPRING_DATASOURCE_PASSWORD: ${QAMIS_DB_PASSWORD:-qamis}
-      DHIS2_BASE_URL: http://dhis2:8080
-      DHIS2_USERNAME: ${DHIS2_API_USER:-admin}
-      DHIS2_PASSWORD: ${DHIS2_API_PASSWORD:-district}
-      PANDASAI_URL: http://pandasai:5000
-      TZ: ${TZ:-UTC}
-    depends_on:
-      - qamisdb
-      - dhis2
-      - pandasai
-    logging: *log-config
-    restart: unless-stopped
 
   qamisdb:
     image: postgres:${POSTGRES_VERSION:-15}
