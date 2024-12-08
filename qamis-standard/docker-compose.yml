@@ -107,14 +107,23 @@ services:
 
   pandasai:
     profiles: ["analytics"]
-    image: qamis/pandasai:${PANDASAI_VERSION:-latest}
+    build:
+      context: ../pandasai
+      dockerfile: Dockerfile
     environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
       DHIS2_URL: http://dhis2:8080
       DHIS2_USERNAME: ${DHIS2_USERNAME:-admin}
       DHIS2_PASSWORD: ${DHIS2_PASSWORD:-district}
       TZ: ${TZ:-UTC}
+    ports:
+      - "8000:8000"
+    volumes:
+      - pandasai-data:/app/data
     depends_on:
       - dhis2
+    networks:
+      - qamis-network
     logging: *log-config
     restart: unless-stopped
 
