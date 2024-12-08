@@ -13,10 +13,16 @@ x-loki-logging: &loki
 x-log-config: &log-config
   <<: *default
 
+networks:
+  qamis-network:
+    driver: bridge
+
 services:
   # ERPNext Services
   erpnext:
     image: frappe/erpnext:${ERPNEXT_VERSION}
+    networks:
+      - qamis-network
     environment:
       DB_HOST: erpnextdb
       DB_PORT: 3306
@@ -45,6 +51,8 @@ services:
     restart: unless-stopped
   dhis2:
     image: dhis2/core:${DHIS2_VERSION}
+    networks:
+      - qamis-network
     environment:
       DHIS2_HOME: /opt/dhis2
       DHIS2_DATABASE_HOST: db
@@ -83,6 +91,8 @@ services:
 
   nginx:
     image: nginx:${NGINX_VERSION}
+    networks:
+      - qamis-network
     ports:
       - "${NGINX_HTTP_PORT}:80"
       - "${NGINX_HTTPS_PORT}:443"
